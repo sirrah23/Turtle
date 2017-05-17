@@ -17,33 +17,35 @@ Tokenizer.prototype.get_next_token = function(){
     if (this.current_char === "X") {
       this.advance();
       num = this.get_number();
-      return Token("X", num);
+      return new Token("X", num);
     }
 
     if (this.current_char === "F") {
       this.advance();
       num = this.get_number();
-      return Token("F", num);
+      return new Token("F", num);
     }
 
     if (this.current_char === "L"){
       this.advance();
       num = this.get_number();
-      return Token("L", num);
+      return new Token("L", num);
     }
 
     if (this.current_char === "R"){
       this.advance();
       num = this.get_number();
-      return Token("R", num);
+      return new Token("R", num);
     }
 
     if (this.current_char === "{"){
-      return Token("LBRACE");
+      this.advance();
+      return new Token("LBRACE");
     }
 
     if (this.current_char === "}"){
-      return Token("RBRACE");
+      this.advance();
+      return new Token("RBRACE");
     }
 
     if (this.current_char === ' '){
@@ -76,4 +78,10 @@ Tokenizer.prototype.get_number = function(){
         this.advance();
     }
     return parseInt(curr_num);
+}
+
+if(typeof window !== 'undefined'){
+    window.Tokenizer = Tokenizer;
+} else {
+     module.exports = Tokenizer
 }
