@@ -13,6 +13,9 @@ function Parser(tokenizer){
 
 Parser.prototype.program = function(){
     children_list = this.children_list();
+    if (this.current_token){
+        throw "Syntax error";
+    }
     return new ASTNode("PROGRAM", null, children_list);
 }
 
@@ -26,11 +29,12 @@ Parser.prototype.children_list = function(){
           case "L":
             children_list.push(this.movement_node());
             break;
-          case "LBRACE":
+          case "X":
             children_list.push(this.replica_node());
             break;
           case "RBRACE":
             break_flag = true;
+            break;
           default:
             throw "Syntax error";
       }
@@ -42,27 +46,27 @@ Parser.prototype.children_list = function(){
 Parser.prototype.movement_node = function(){
   var token = this.current_token;
   this.eat(["F", "R", "L"]);
-  return ASTNode(token.type, token.attribute, []);
+  return new ASTNode(token.type, token.attribute, []);
 }
 
 Parser.prototype.replica_node = function(){
-    this.eat(["LBRACE"]);
     var replica_token = this.current_token;
     this.eat(["X"])
+    this.eat(["LBRACE"]);
     var children_list = this.children_list();
     this.eat(["RBRACE"]);
-    return ASTNode(
+    return new ASTNode(
       replica_token.type,
       replica_token.attribute,
-      children_list()
+      children_list
     );
 }
 
 Parser.prototype.eat = function(token_type_list){
   if (!token_type_list.includes(this.current_token.type)){
-      throw "Syntax error"
+      throw "Syntax error";
   }
-  this.current_token = this.parser.get_next_token();
+  this.current_token = this.tokenizer.get_next_token();
 }
 
 Parser.prototype.parse = function(){
