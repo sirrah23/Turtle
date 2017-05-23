@@ -1,8 +1,10 @@
-function Token(type, attribute){
+function isLetter(str){
+  return str.length === 1 && str.match(/[a-z]/i);
+}
+
+function Token(type, value){
   this.type = type;
-  if(attribute){
-    this.attribute = attribute;
-  }
+  this.value = value;
 }
 
 function Tokenizer(text){
@@ -14,38 +16,25 @@ function Tokenizer(text){
 Tokenizer.prototype.get_next_token = function(){
   while (this.current_char){
 
-    if (this.current_char === "X") {
+    if (isLetter(this.current_char)) {
+      var char = this.current_char;
       this.advance();
-      num = this.get_number();
-      return new Token("X", num);
-    }
-
-    if (this.current_char === "F") {
-      this.advance();
-      num = this.get_number();
-      return new Token("F", num);
-    }
-
-    if (this.current_char === "L"){
-      this.advance();
-      num = this.get_number();
-      return new Token("L", num);
-    }
-
-    if (this.current_char === "R"){
-      this.advance();
-      num = this.get_number();
-      return new Token("R", num);
+      return new Token("CHARACTER", char);
     }
 
     if (this.current_char === "{"){
       this.advance();
-      return new Token("LBRACE");
+      return new Token("LBRACE", "{");
     }
 
     if (this.current_char === "}"){
       this.advance();
-      return new Token("RBRACE");
+      return new Token("RBRACE", "}");
+    }
+
+    if(!isNaN(this.current_char)){
+        var num = this.get_number();
+        return new Token("NUMBER", num);
     }
 
     if (this.current_char === ' '){
@@ -53,7 +42,7 @@ Tokenizer.prototype.get_next_token = function(){
     }
 
   }
-  return null;
+  return new Token("EOF", null);
 }
 
 Tokenizer.prototype.skip_white_space = function(){

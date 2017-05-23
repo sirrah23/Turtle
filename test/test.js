@@ -3,49 +3,80 @@ var Parser = require('../public/Parser.js');
 var assert = require('assert');
 
 describe('Tokenizer', function(){
-  it('should see one movement token', function(){
+  it('should see one two tokens - character and number', function(){
     var t_tokenizer = new Tokenizer("F50");
     var token = t_tokenizer.get_next_token();
-    assert.equal("F", token.type);
-    assert.equal(50, token.attribute);
-    var token = t_tokenizer.get_next_token();
-    assert.equal(null, token);
+    assert.equal("CHARACTER", token.type);
+    assert.equal("F", token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("NUMBER", token.type);
+    assert.equal(50, token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("EOF", token.type);
+    assert.equal(null, token.value);
   });
 
-  it('should see two movement tokens', function(){
+  it('should see four tokens - character, number pairs', function(){
     var t_tokenizer = new Tokenizer("F50 L15");
     var token = t_tokenizer.get_next_token();
-    assert.equal("F", token.type);
-    assert.equal(50, token.attribute);
-    var token = t_tokenizer.get_next_token();
-    assert.equal("L", token.type);
-    assert.equal(15, token.attribute);
+    assert.equal("CHARACTER", token.type);
+    assert.equal("F", token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("NUMBER", token.type);
+    assert.equal(50, token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("CHARACTER", token.type);
+    assert.equal("L", token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("NUMBER", token.type);
+    assert.equal(15, token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("EOF", token.type);
+    assert.equal(null, token.value);
   });
 
   it('should skip spaces and see two movement tokens', function(){
-    var t_tokenizer = new Tokenizer("       F50     L15     ");
+    var t_tokenizer = new Tokenizer("F50 L15");
     var token = t_tokenizer.get_next_token();
-    assert.equal("F", token.type);
-    assert.equal(50, token.attribute);
-    var token = t_tokenizer.get_next_token();
-    assert.equal("L", token.type);
-    assert.equal(15, token.attribute);
+    assert.equal("CHARACTER", token.type);
+    assert.equal("F", token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("NUMBER", token.type);
+    assert.equal(50, token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("CHARACTER", token.type);
+    assert.equal("L", token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("NUMBER", token.type);
+    assert.equal(15, token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("EOF", token.type);
+    assert.equal(null, token.value);
   });
 
   it('should detect repeat token', function(){
     var t_tokenizer = new Tokenizer("X14{F50}");
     var token = t_tokenizer.get_next_token();
-    assert.equal("X", token.type);
-    assert.equal(14, token.attribute);
-    var token = t_tokenizer.get_next_token();
+    assert.equal("CHARACTER", token.type);
+    assert.equal("X", token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("NUMBER", token.type);
+    assert.equal(14, token.value);
+    token = t_tokenizer.get_next_token();
     assert.equal("LBRACE", token.type);
-    var token = t_tokenizer.get_next_token();
-    assert.equal("F", token.type);
-    assert.equal(50, token.attribute);
-    var token = t_tokenizer.get_next_token();
+    assert.equal("{", token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("CHARACTER", token.type);
+    assert.equal("F", token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("NUMBER", token.type);
+    assert.equal(50, token.value);
+    token = t_tokenizer.get_next_token();
     assert.equal("RBRACE", token.type);
-    var token = t_tokenizer.get_next_token();
-    assert.equal(null, token);
+    assert.equal("}", token.value);
+    token = t_tokenizer.get_next_token();
+    assert.equal("EOF", token.type);
+    assert.equal(null, token.value);
   });
 });
 
