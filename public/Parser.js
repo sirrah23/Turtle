@@ -13,7 +13,7 @@ function Parser(tokenizer){
 
 Parser.prototype.program = function(){
     children_list = this.children_list();
-    if (this.current_token){
+    if (this.current_token && this.current_token.type !== "EOF"){
         throw "Syntax error";
     }
     return new ASTNode("PROGRAM", null, children_list);
@@ -22,15 +22,16 @@ Parser.prototype.program = function(){
 Parser.prototype.children_list = function(){
     var children_list = [];
     var break_flag = false;
-    while(this.current_token){
+    while(this.current_token && this.current_token.type !== "EOF"){
       switch(this.current_token.type){
-          case "F":
-          case "R":
-          case "L":
-            children_list.push(this.movement_node());
+          case "CHARACTER":
+            children_list.push(this.character_node());
             break;
-          case "X":
-            children_list.push(this.replica_node());
+          case "NUMBER":
+            throw "Syntax error"; //Characters before numbers!
+            break;
+          case "LBRACE":
+            throw "Syntax error"; //Left brace comes after the "X"
             break;
           case "RBRACE":
             break_flag = true;
@@ -43,21 +44,39 @@ Parser.prototype.children_list = function(){
     return children_list;
 }
 
+Parser.prototype.character_node = function(){
+    if (this.current_token.value !== "X"){
+      return this.movement_node();
+    } else {
+      return this.replica_node();
+    }
+}
+
 Parser.prototype.movement_node = function(){
-  var token = this.current_token;
-  this.eat(["F", "R", "L"]);
-  return new ASTNode(token.type, token.attribute, []);
+  if (!["F", "L", "R"].includes(this.current_token.value)){
+    throw "Syntax error";
+  }
+  var char_token = this.current_token;
+  this.eat(["CHARACTER"]);
+  var num_token = this.current_token;
+  this.eat(["NUMBER"]);
+  return new ASTNode(char_token.value, num_token.value, []);
 }
 
 Parser.prototype.replica_node = function(){
-    var replica_token = this.current_token;
-    this.eat(["X"])
+    var char_token = this.current_token;
+    if (char_token.value !== "X"){
+      throw "Syntax error";
+    }
+    this.eat(["CHARACTER"]);
+    var num_token = this.current_token;
+    this.eat(["NUMBER"])
     this.eat(["LBRACE"]);
     var children_list = this.children_list();
     this.eat(["RBRACE"]);
     return new ASTNode(
-      replica_token.type,
-      replica_token.attribute,
+      char_token.value,
+      num_token.value,
       children_list
     );
 }
