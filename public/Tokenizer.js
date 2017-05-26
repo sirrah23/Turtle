@@ -69,8 +69,6 @@ Tokenizer.prototype.get_number = function(){
     return parseInt(curr_num);
 }
 
-if(typeof window !== 'undefined'){
-    window.Tokenizer = Tokenizer;
-} else {
+if(typeof window === 'undefined'){
      module.exports = Tokenizer
 }

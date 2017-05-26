@@ -1,4 +1,9 @@
-var Tokenizer = require('./Tokenizer.js');
+const MAP = {
+"F":"MOVE_FORWARD",
+"L":"ROTATE_LEFT",
+"R": "ROTATE_RIGHT",
+"X": "REPLICATE",
+}
 
 function ASTNode(type, attribute, children){
     this.type = type;
@@ -60,7 +65,7 @@ Parser.prototype.movement_node = function(){
   this.eat(["CHARACTER"]);
   var num_token = this.current_token;
   this.eat(["NUMBER"]);
-  return new ASTNode(char_token.value, num_token.value, []);
+  return new ASTNode(MAP[char_token.value], num_token.value, []);
 }
 
 Parser.prototype.replica_node = function(){
@@ -75,7 +80,7 @@ Parser.prototype.replica_node = function(){
     var children_list = this.children_list();
     this.eat(["RBRACE"]);
     return new ASTNode(
-      char_token.value,
+      MAP[char_token.value],
       num_token.value,
       children_list
     );
@@ -92,8 +97,6 @@ Parser.prototype.parse = function(){
     return this.program();
 }
 
-if(typeof window !== 'undefined'){
-    window.Parser = Parser;
-} else {
-     module.exports = Parser;
+if(typeof window === 'undefined'){
+   module.exports = Parser;
 }
