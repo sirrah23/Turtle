@@ -1,5 +1,6 @@
 var Tokenizer = require('../public/Tokenizer.js');
 var Parser = require('../public/Parser.js');
+var Interpreter = require('../public/Interpreter.js');
 var assert = require('assert');
 
 describe('Tokenizer', function(){
@@ -84,54 +85,54 @@ describe('Parser', function(){
     it('should generate a program node with one child', function(){
       var t_tokenizer = new Tokenizer("F13");
       var t_parser = new Parser(t_tokenizer);
-      var program_node = t_parser.parse();
-      assert.equal("PROGRAM", program_node.type);
-      assert.equal(null, program_node.attribute);
-      assert.equal(1, program_node.children.length);
-      assert.equal("MOVE_FORWARD", program_node.children[0].type);
-      assert.equal(13, program_node.children[0].attribute);
+      var tree = t_parser.parse();
+      assert.equal("PROGRAM", tree.type);
+      assert.equal(null, tree.attribute);
+      assert.equal(1, tree.children.length);
+      assert.equal("MOVE_FORWARD", tree.children[0].type);
+      assert.equal(13, tree.children[0].attribute);
     });
 
     it('should generate a program node with two children', function(){
       var t_tokenizer = new Tokenizer("F13    R92");
       var t_parser = new Parser(t_tokenizer);
-      var program_node = t_parser.parse();
-      assert.equal("PROGRAM", program_node.type);
-      assert.equal(null, program_node.attribute);
-      assert.equal(2, program_node.children.length);
-      assert.equal("MOVE_FORWARD", program_node.children[0].type);
-      assert.equal(13, program_node.children[0].attribute);
-      assert.equal("ROTATE_RIGHT", program_node.children[1].type);
-      assert.equal(92, program_node.children[1].attribute);
+      var tree = t_parser.parse();
+      assert.equal("PROGRAM", tree.type);
+      assert.equal(null, tree.attribute);
+      assert.equal(2, tree.children.length);
+      assert.equal("MOVE_FORWARD", tree.children[0].type);
+      assert.equal(13, tree.children[0].attribute);
+      assert.equal("ROTATE_RIGHT", tree.children[1].type);
+      assert.equal(92, tree.children[1].attribute);
     });
 
     it('should generate a program node with two children', function(){
       var t_tokenizer = new Tokenizer("F13    L92");
       var t_parser = new Parser(t_tokenizer);
-      var program_node = t_parser.parse();
-      assert.equal("PROGRAM", program_node.type);
-      assert.equal(null, program_node.attribute);
-      assert.equal(2, program_node.children.length);
-      assert.equal("MOVE_FORWARD", program_node.children[0].type);
-      assert.equal(13, program_node.children[0].attribute);
-      assert.equal("ROTATE_LEFT", program_node.children[1].type);
-      assert.equal(92, program_node.children[1].attribute);
+      var tree = t_parser.parse();
+      assert.equal("PROGRAM", tree.type);
+      assert.equal(null, tree.attribute);
+      assert.equal(2, tree.children.length);
+      assert.equal("MOVE_FORWARD", tree.children[0].type);
+      assert.equal(13, tree.children[0].attribute);
+      assert.equal("ROTATE_LEFT", tree.children[1].type);
+      assert.equal(92, tree.children[1].attribute);
     });
 
     it('should generate a program node that has a replica node', function(){
       var t_tokenizer = new Tokenizer("X50{F10 L5}");
       var t_parser = new Parser(t_tokenizer);
-      var program_node = t_parser.parse();
-      assert.equal("PROGRAM", program_node.type);
-      assert.equal(null, program_node.attribute);
-      assert.equal(1, program_node.children.length);
-      assert.equal("REPLICATE", program_node.children[0].type);
-      assert.equal(50, program_node.children[0].attribute);
-      assert.equal(2, program_node.children[0].children.length);
-      assert.equal("MOVE_FORWARD", program_node.children[0].children[0].type);
-      assert.equal(10, program_node.children[0].children[0].attribute);
-      assert.equal("ROTATE_LEFT", program_node.children[0].children[1].type);
-      assert.equal(5, program_node.children[0].children[1].attribute);
+      var tree = t_parser.parse();
+      assert.equal("PROGRAM", tree.type);
+      assert.equal(null, tree.attribute);
+      assert.equal(1, tree.children.length);
+      assert.equal("REPLICATE", tree.children[0].type);
+      assert.equal(50, tree.children[0].attribute);
+      assert.equal(2, tree.children[0].children.length);
+      assert.equal("MOVE_FORWARD", tree.children[0].children[0].type);
+      assert.equal(10, tree.children[0].children[0].attribute);
+      assert.equal("ROTATE_LEFT", tree.children[0].children[1].type);
+      assert.equal(5, tree.children[0].children[1].attribute);
     });
 
     it('should see brace related syntax errors', function(){
@@ -142,4 +143,57 @@ describe('Parser', function(){
       /Syntax error/,
       "Did not throw syntax error");
     });
+});
+
+describe("Interpreter", function(){
+  it("should return a move forward action", function(){
+      var t_tokenizer = new Tokenizer("F100");
+      var t_parser = new Parser(t_tokenizer);
+      var t_interpreter = new Interpreter(t_parser);
+      var move_generator = t_interpreter.get_move_generator();
+      var move = move_generator.next();
+      assert.equal("MOVE_FORWARD", move.value.action);
+      assert.equal(100, move.value.attribute);
+      move = move_generator.next();
+      assert.equal("STOP", move.value.action);
+      assert.equal(null, move.value.attribute);
+  });
+
+  it("should return move forward and rotate actions", function(){
+      var t_tokenizer = new Tokenizer("F100 R12");
+      var t_parser = new Parser(t_tokenizer);
+      var t_interpreter = new Interpreter(t_parser);
+      var move_generator = t_interpreter.get_move_generator();
+      var move = move_generator.next();
+      assert.equal("MOVE_FORWARD", move.action);
+      assert.equal(100, move.attribute);
+      move = move_generator.next();
+      assert.equal("ROTATE_RIGHT", move.action);
+      assert.equal(12, move.attribute);
+      move = move_generator.next();
+      assert.equal("STOP", move.action);
+      assert.equal(null, move.attribute);
+  });
+
+  it("should replicate action set", function(){
+      var t_tokenizer = new Tokenizer("X2{F50 L12}");
+      var t_parser = new Parser(t_tokenizer);
+      var t_interpreter = new Interpreter(t_parser);
+      var move_generator = t_interpreter.get_move_generator();
+      var move = move_generator.next();
+      assert.equal("MOVE_FORWARD", move.action);
+      assert.equal(50, move.attribute);
+      move = move_generator.next();
+      assert.equal("ROTATE_LEFT", move.action);
+      assert.equal(12, move.attribute);
+      move = move_generator.next();
+      assert.equal("MOVE_FORWARD", move.action);
+      assert.equal(50, move.attribute);
+      move = move_generator.next();
+      assert.equal("ROTATE_LEFT", move.action);
+      assert.equal(12, move.attribute);
+      move = move_generator.next();
+      assert.equal("STOP", move.action);
+      assert.equal(null, move.attribute);
+  });
 });
