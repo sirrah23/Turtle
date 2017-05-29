@@ -23,7 +23,7 @@ Interpreter.prototype.move_generator = function*(){
         break;
       }
     }
-    yield {action:"STOP", attribute: null};
+    yield new Movement("STOP", null);
 }
 
 Interpreter.prototype.get_next_move = function*(children){
