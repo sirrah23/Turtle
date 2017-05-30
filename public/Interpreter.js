@@ -12,9 +12,13 @@ Interpreter.prototype.get_move_generator = function(){
   return this.move_generator.bind(this)();
 }
 
-Interpreter.prototype.move_generator = function*(){
+Interpreter.prototype.move_generator = function*(children){
     var next_move;
-    var move_obtainer = this.get_next_move(this.ast.children);
+    if (!children){
+      var move_obtainer = this.get_next_move(this.ast.children);
+    } else {
+      var move_obtainer = this.get_next_move(children);
+    }
     while(true){
       next_move = move_obtainer.next();
       if(!next_move.done){
@@ -38,6 +42,17 @@ Interpreter.prototype.get_next_move = function*(children){
       case "ROTATE_RIGHT":
           yield new Movement("ROTATE_RIGHT", children[i].attribute)
           break;
+      case "REPLICATE":
+        var mgen, next_move;
+        for(var j = 0; j < children[i].attribute; j++){
+          mgen = this.get_next_move(children[i].children);
+          next_move = mgen.next();
+          while(!next_move.done){
+            yield next_move.value;
+            next_move = mgen.next();
+          }
+        }
+        break;
       default:
     }
   }
