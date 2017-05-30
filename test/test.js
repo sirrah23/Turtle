@@ -196,4 +196,36 @@ describe("Interpreter", function(){
       assert.equal("STOP", move.value.action);
       assert.equal(null, move.value.attribute);
   });
+
+  it("should mix moves and replication action set", function(){
+      var t_tokenizer = new Tokenizer("R19 F13 L14 X2{F50 L12}");
+      var t_parser = new Parser(t_tokenizer);
+      var t_interpreter = new Interpreter(t_parser);
+      var move_generator = t_interpreter.get_move_generator();
+      var move = move_generator.next();
+      assert.equal("ROTATE_RIGHT", move.value.action);
+      assert.equal(19, move.value.attribute);
+      move = move_generator.next();
+      assert.equal("MOVE_FORWARD", move.value.action);
+      assert.equal(13, move.value.attribute);
+      move = move_generator.next();
+      assert.equal("ROTATE_LEFT", move.value.action);
+      assert.equal(14, move.value.attribute);
+      move = move_generator.next();
+      assert.equal("MOVE_FORWARD", move.value.action);
+      assert.equal(50, move.value.attribute);
+      move = move_generator.next();
+      assert.equal("ROTATE_LEFT", move.value.action);
+      assert.equal(12, move.value.attribute);
+      move = move_generator.next();
+      assert.equal("MOVE_FORWARD", move.value.action);
+      assert.equal(50, move.value.attribute);
+      move = move_generator.next();
+      assert.equal("ROTATE_LEFT", move.value.action);
+      assert.equal(12, move.value.attribute);
+      move = move_generator.next();
+      assert.equal("STOP", move.value.action);
+      assert.equal(null, move.value.attribute);
+  });
+
 });
