@@ -1,6 +1,7 @@
 var Tokenizer = require('../public/Tokenizer.js');
 var Parser = require('../public/Parser.js');
 var Interpreter = require('../public/Interpreter.js');
+var Interpreter = require('../public/Manager.js');
 var assert = require('assert');
 
 describe('Tokenizer', function(){
