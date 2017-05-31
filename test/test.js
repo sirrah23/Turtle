@@ -1,7 +1,6 @@
 var Tokenizer = require('../public/Tokenizer.js');
 var Parser = require('../public/Parser.js');
 var Interpreter = require('../public/Interpreter.js');
-var Interpreter = require('../public/Manager.js');
 var assert = require('assert');
 
 describe('Tokenizer', function(){
@@ -80,6 +79,44 @@ describe('Tokenizer', function(){
     assert.equal(token.type, "EOF");
     assert.equal(token.value, null);
   });
+
+  it('should skip spaces without a problem', function(){
+    var t_tokenizer = new Tokenizer("X2{ F50 L13 } L60");
+    var token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "CHARACTER");
+    assert.equal(token.value, "X");
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "NUMBER");
+    assert.equal(token.value, 2);
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "LBRACE");
+    assert.equal(token.value, "{");
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "CHARACTER");
+    assert.equal(token.value, "F");
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "NUMBER");
+    assert.equal(token.value, 50);
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "CHARACTER");
+    assert.equal(token.value, "L");
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "NUMBER");
+    assert.equal(token.value, 13);
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "RBRACE");
+    assert.equal(token.value, "}");
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "CHARACTER");
+    assert.equal(token.value, "L");
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "NUMBER");
+    assert.equal(token.value, 60);
+    token = t_tokenizer.get_next_token();
+    assert.equal(token.type, "EOF");
+    assert.equal(token.value, null);
+  });
+
 });
 
 describe('Parser', function(){

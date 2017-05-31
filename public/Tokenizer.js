@@ -32,13 +32,13 @@ Tokenizer.prototype.get_next_token = function(){
       return new Token("RBRACE", "}");
     }
 
+    if (this.current_char === ' '){
+      this.skip_white_space();
+    }
+
     if(!isNaN(this.current_char)){
         var num = this.get_number();
         return new Token("NUMBER", num);
-    }
-
-    if (this.current_char === ' '){
-      this.skip_white_space();
     }
 
   }
