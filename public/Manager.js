@@ -5,7 +5,7 @@ function Manager(turtle, program){
     this.turtle = turtle;
     this.points = [];
     this.move_generator = new Interpreter(new Parser(new Tokenizer(program))).get_move_generator();
-    this.points.push(this.turtle.pos);
+    this.add_point();
     this.stat = RUNNING;
 }
 
@@ -19,14 +19,31 @@ Manager.prototype.step = function(){
       return;
     }
     this.turtle.move(next_move);
-    this.points.push(this.turtle.pos);
+    //If all the turtle did was rotate then we don't need to add 
+    //a new point for that...
+    if(!this.turtle.pos.equals(this.points[this.points.length-1]))
+        this.add_point();
+}
+
+Manager.prototype.add_point = function(){
+    this.points.push(this.turtle.pos.copy());
+    return;
 }
 
 Manager.prototype.show = function(){
-    this.turtle.show();
     this.draw_points();
+    this.turtle.show();
 }
 
 Manager.prototype.draw_points = function(){
-    //TODO: Draw a line across all points...p5 has a way to do this
+    if(this.points.length <= 1){
+        return;
+    }
+    push();
+    stroke(0);
+    for(var i = 0; i < this.points.length-1; i++){
+       line(this.points[i].x, this.points[i].y, this.points[i+1].x, this.points[i+1].y);
+       console.log("Line drawing happens...")
+    }
+    pop();
 }
