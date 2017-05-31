@@ -1,15 +1,24 @@
 var RUNNING = "RUNNING",
     STOPPED = "STOPPED";
 
-function Manager(turtle, program){
+function Manager(turtle){
     this.turtle = turtle;
+    this.turtle_initial_pos = this.turtle.pos.copy();
     this.points = [];
-    this.move_generator = new Interpreter(new Parser(new Tokenizer(program))).get_move_generator();
     this.add_point();
+    this.stat = STOPPED;
+    this.move_generator = null;
+}
+
+Manager.prototype.setProgram = function(program){
+    this.move_generator = new Interpreter(new Parser(new Tokenizer(program))).get_move_generator();
     this.stat = RUNNING;
 }
 
 Manager.prototype.step = function(){
+    if(!this.move_generator){
+        return;
+    }
     if(this.stat === STOPPED){
         return;
     }
@@ -35,6 +44,12 @@ Manager.prototype.show = function(){
     this.turtle.show();
 }
 
+Manager.prototype.reset = function(){
+    this.turtle.reset();
+    this.points = [];
+    this.add_point();
+}
+
 Manager.prototype.draw_points = function(){
     if(this.points.length <= 1){
         return;
@@ -43,7 +58,6 @@ Manager.prototype.draw_points = function(){
     stroke(0);
     for(var i = 0; i < this.points.length-1; i++){
        line(this.points[i].x, this.points[i].y, this.points[i+1].x, this.points[i+1].y);
-       console.log("Line drawing happens...")
     }
     pop();
 }

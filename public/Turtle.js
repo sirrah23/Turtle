@@ -1,5 +1,6 @@
 function Turtle(x, y){
     this.pos = createVector(x, y);
+    this.initial_pos = this.pos.copy();
     this.dir = createVector(0,-1);
     this.angle = 0;
     this.size = 20;
@@ -39,7 +40,6 @@ Turtle.prototype.move = function(move_node){
 
 }
 
-
 Turtle.prototype.move_forward = function (pixels){
     var move_vec = this.dir.copy()
     this.pos.add(move_vec.mult(pixels));
@@ -49,4 +49,14 @@ Turtle.prototype.rotate = function(angle){
     angleMode(DEGREES);
     this.angle += angle;
     this.dir.rotate(angle);
+}
+
+Turtle.prototype.setPos = function(pos){
+    this.pos = pos.copy();
+}
+
+Turtle.prototype.reset = function(){
+    this.pos = this.initial_pos.copy();
+    this.angle = 0;
+    this.dir = createVector(0, -1);
 }
