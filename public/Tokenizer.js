@@ -2,6 +2,12 @@ function isLetter(str){
   return str.length === 1 && str.match(/[a-z]/i);
 }
 
+function isDigit(str){
+  return str.length === 1 
+  && str.charCodeAt(0) >= 48
+  && str.charCodeAt(0) <= 57;
+}
+
 function Token(type, value){
   this.type = type;
   this.value = value;
@@ -34,12 +40,15 @@ Tokenizer.prototype.get_next_token = function(){
 
     if (this.current_char === ' '){
       this.skip_white_space();
+      continue;
     }
 
-    if(!isNaN(this.current_char)){
+    if(isDigit(this.current_char)){
         var num = this.get_number();
         return new Token("NUMBER", num);
     }
+
+    throw "Unexpected character: " + this.current_char;
 
   }
   return new Token("EOF", null);
@@ -62,7 +71,7 @@ Tokenizer.prototype.advance = function(){
 
 Tokenizer.prototype.get_number = function(){
     curr_num = ""
-    while (this.current_char && !isNaN(this.current_char)){
+    while (this.current_char && isDigit(this.current_char)){
         curr_num += this.current_char;
         this.advance();
     }
