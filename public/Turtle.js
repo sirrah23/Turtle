@@ -11,14 +11,14 @@ Turtle.prototype.show = function(){
     push();
     translate(this.pos.x, this.pos.y);
     rotate(this.angle);
-    fill(255, 0, 0)
-    ellipse(0, 0 - (this.size-10),  this.size/2, this.size/2);  // head
     fill(0, 255, 0);
-    ellipse(-this.size/2, -this.size/5, this.size/2, this.size/2);     // left hand
-    ellipse(this.size/2, -this.size/5, this.size/2, this.size/2);      // right hand
+    ellipse(0, 0 - (this.size-10),  this.size/2, this.size/2);        // head
+    ellipse(-this.size/2, -this.size/5, this.size/2, this.size/2);    // left hand
+    ellipse(this.size/2, -this.size/5, this.size/2, this.size/2);     // right hand
     ellipse(-this.size/2, this.size/2, this.size/2, this.size/2);     // left leg
     ellipse(this.size/2, this.size/2, this.size/2, this.size/2);      // right leg
-    ellipse(0, 0, this.size, this.size);            // body
+    fill(139,69,19);
+    ellipse(0, 0, this.size, this.size);                              // body
     pop();
 }
 
