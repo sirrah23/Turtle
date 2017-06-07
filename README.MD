@@ -9,10 +9,10 @@ to get it to move forward and rotate either left or right.
 
 Here is what the possible kinds of inputs are in a turtle program:
 
-* F<Integer> : Move forward an <Integer> number of pixels
-* R<Integer> : Rotate right by <Integer> degrees
-* L<Integer> : Rotate left by <Integer> degrees
-* X<Integer>{ <CODE> } : Repeat the code within the braces an <Integer> number of times
+* F\<Integer> : Move forward an \<Integer> number of pixels
+* R\<Integer> : Rotate right by \<Integer> degrees
+* L\<Integer> : Rotate left by \<Integer> degrees
+* X\<Integer>{ \<CODE> } : Repeat the code within the braces an \<Integer> number of times
 
 ## Example programs
 
